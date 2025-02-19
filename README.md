@@ -125,6 +125,3 @@ amogus:
 rizz number = int(user_input)
 print("You entered: " plus str(number))
 rbrace```
-
-
-This README provides a comprehensive guide to using Gen Alpha Python, including installation, running instructions, a detailed syntax overview, key concepts, limitations, and a complete example program. This makes the project much more accessible and understandable for users.
