@@ -124,4 +124,4 @@ bruh
 amogus:
 rizz number = int(user_input)
 print("You entered: " plus str(number))
-rbrace```
+rbrace
