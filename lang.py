@@ -1,10 +1,9 @@
 """
 Gen Alpha Python (GAP) - A Python-like language with Gen Alpha slang.
-
 This is a rudimentary interpreter, not a full compiler.  It translates
 Gen Alpha slang into valid Python code and then *executes* that Python code.
 This approach has significant limitations, but it's a good way to demonstrate
-the basic concept without building a full-blown compiler and virtual machine.
+the basic concept without building a full-blown compiler and virtual machine. 😁
 
 Key Design Choices:
 
