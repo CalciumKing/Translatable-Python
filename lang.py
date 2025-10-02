@@ -23,6 +23,7 @@ Key Design Choices:
 
 import re  # For regular expressions (used for parsing)
 import sys
+import os
 
 
 def translate_line(line, global_vars):
@@ -152,6 +153,7 @@ def run_gap_code(code):
     # --- Execute the Translated Line ---
     try:
         exec('\n'.join(translated_program), global_vars)
+        return '\n'.join(translated_program)
     except Exception as e:
         # print(f"Error executing line: {original_line.strip()}")
         # print(f"Translated line: {translated_line.strip()}")
@@ -176,7 +178,13 @@ def main():
         try:
             with open(filename, 'r', encoding='utf-8') as f:
                 code = f.read()
-            run_gap_code(code)
+            python_program = run_gap_code(code)
+
+            if (len(sys.argv) > 2 and sys.argv[2] == '--debug'):
+                if not os.path.exists("debug"):
+                    os.makedirs("debug")
+                    with open("debug/debug.py", "w", encoding="utf-8") as debug_file:
+                        debug_file.write(python_program)
         except FileNotFoundError:
             print(f"Error: File not found: {filename}")
 
