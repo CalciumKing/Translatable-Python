@@ -134,20 +134,18 @@ def run_gap_code(code):
         # This is a *very* simplified indentation handler.  It assumes:
         # 1. Indentation is always consistent (e.g., always 4 spaces).
         # 2. There's no multi-line statements within blocks (which is illegal in Python anyway).
-        leading_spaces = len(original_line) - len(original_line.lstrip())
-        new_indent_level = leading_spaces // 4  #  Assume 4 spaces per indent
+        #leading_spaces = len(original_line) - len(original_line.lstrip())  
+        #  Assume 4 spaces per indent
         
         # --- Function Definition Indentation
         if translated_line.startswith("def"):
             in_function_def = True
-            new_indent_level = 0
 
         if not in_function_def:
+            pass
           # Adjust to be outside function defs
-            new_indent_level = 0
 
         # Prepend the correct number of spaces for indentation
-        translated_line = "    " * new_indent_level + translated_line
         translated_program.append(translated_line)
 
     # --- Execute the Translated Line ---
@@ -183,8 +181,8 @@ def main():
             if (len(sys.argv) > 2 and sys.argv[2] == '--debug'):
                 if not os.path.exists("debug"):
                     os.makedirs("debug")
-                    with open("debug/debug.py", "w", encoding="utf-8") as debug_file:
-                        debug_file.write(python_program)
+                with open(f"debug/{filename.removesuffix('.blyad')}.py", "w", encoding="utf-8") as debug_file:
+                    debug_file.write(python_program)
         except FileNotFoundError:
             print(f"Error: File not found: {filename}")
 
