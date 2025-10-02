@@ -41,54 +41,39 @@ def translate_line(line, global_vars):
     if not line:  # Skip empty lines TODO: also skip on comment indicator
         return None
 
-    # TODO: optimize using dictionary or tuple
-    # --- Lexical Replacements (Simple Keywords) ---
-    line = line.replace("нечего", "None")
-    line = line.replace("цел", "int")  # Still useful for type hinting (though not enforced)
-    line = line.replace("вещ", "float")
-    # line = line.replace("gigachad", "float") # float in this simple interpretor
-    line = line.replace("стр", "str")
-    line = line.replace("бул", "bool")
-    line = line.replace("да", "True")
-    line = line.replace("нет", "False")
-    line = line.replace("если", "if")
-    line = line.replace("иначе", "else")
-    line = line.replace("пока", "while")
-    line = line.replace("прервать", "break")
-    line = line.replace("продолжить", "continue")
-    line = line.replace("для", "for")
-    line = line.replace("воз", "return")  # Limited 'return' support (see below)
-    line = line.replace("печать", "print") # Keep print
-    line = line.replace("ввод", "input") # keep input
-    line = line.replace("соп", "match")  #  match/case (Python 3.10+)
-    line = line.replace("поп", "try")
-    line = line.replace("случай", "case")
-    # line = line.replace("based", "case _")   #Default case match
-    line = line.replace("выб", "raise") # Better for exceptions
-    # line = line.replace("equals", "=")
-    # line = line.replace("plus", "+")
-    # line = line.replace("minus", "-")
-    # line = line.replace("times", "*")
-    # line = line.replace("divide", "/")
-    # line = line.replace("modulo", "%")
-    line = line.replace(" не ", " not ")
-    line = line.replace(" и ", " and ")
-    line = line.replace(" или ", " or ")
-    # line = line.replace("equals_equals", "==")
-    # line = line.replace("not_equals", "!=")
-    # line = line.replace("less_than", "<")
-    # line = line.replace("greater_than", ">")
-    # line = line.replace("less_than_or_equal", "<=")
-    # line = line.replace("greater_than_or_equal", ">=")
-    # line = line.replace("semicolon", "") # Remove semicolons
-    # line = line.replace("comma", ",")
-    # line = line.replace("lparen", "(")
-    # line = line.replace("rparen", ")")
-    # line = line.replace("lbrace", ":")   # Use : for blocks (Python style)
-    line = line.replace("{", ":")  # start of a block
-    line = line.replace("}", "")  # end of a block (just remove)
-    line = line.replace('функ', 'def')
-
+    translations: list[tuple[str, str]] = [
+        ("None", 'нечего'),
+        ("int", 'цел'),
+        ("float", 'вещ'),
+        ("str", 'стр'),
+        ("bool", 'бул'),
+        ("True", 'да'),
+        ("False", 'нет'),
+        ("if", 'если'),
+        ("else", 'иначе'),
+        ("while", 'пока'),
+        ("break", 'прервать'),
+        ("continue", 'продолжить'),
+        ("for", 'для'),
+        ("return", 'воз'),
+        ("print", 'печать'),
+        ("input", 'ввод'),
+        ("match", 'соп'),
+        ("try", 'поп'),
+        ("case", 'случай'),
+        ("raise", 'выб'),
+        ('def', 'функ'),
+        
+        (" not ", ' не '),
+        (" and ", ' и '),
+        (" or ", ' или '),
+        
+        (':', '{'),
+        ('', '}')
+    ]
+    
+    for eng, rus in translations:
+        line = line.replace(rus, eng)
 
     # --- Function Definition (Very Basic) ---
     #   def my_function(arg1, arg2):
@@ -116,10 +101,8 @@ def run_gap_code(code):
         code (str): The Gen Alpha Python code.
     """
 
-    global_vars = {}  # Initialize the global namespace
-    global_vars["__return_value__"] = None # Initialize for return
+    global_vars = {"__return_value__": None}  # Initialize the global namespace
     lines = code.split('\n')
-    indent_level = 0
     in_function_def = False
     translated_program = []
 
@@ -153,8 +136,6 @@ def run_gap_code(code):
     try:
         exec('\n'.join(translated_program), global_vars)
     except Exception as e:
-        # print(f"Error executing line: {original_line.strip()}")
-        # print(f"Translated line: {translated_line.strip()}")
         print(f"Error: {e}")
         return  # Stop on error
 
