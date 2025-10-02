@@ -38,55 +38,57 @@ def translate_line(line, global_vars):
         ValueError: If the Gen Alpha syntax is invalid.
     """
 
+    # line = line.encode("utf-8")
     line = line.strip()  # Remove leading/trailing whitespace
     if not line:  # Skip empty lines
         return None
 
     # --- Lexical Replacements (Simple Keywords) ---
-    line = line.replace("skibidi", "None")
-    line = line.replace("rizz", "int")  # Still useful for type hinting (though not enforced)
-    line = line.replace("chad", "float")
-    line = line.replace("gigachad", "float") # float in this simple interpretor
-    line = line.replace("yap", "str")
-    line = line.replace("cap", "bool")
-    line = line.replace("W", "True")
-    line = line.replace("L", "False")
-    line = line.replace("edgy", "if")
-    line = line.replace("amogus", "else")
-    line = line.replace("goon", "while")
-    line = line.replace("bruh", "break")
-    line = line.replace("grind", "continue")
-    line = line.replace("flex", "for")
-    line = line.replace("bussin", "return")  # Limited 'return' support (see below)
-    line = line.replace("print", "print") # Keep print
-    line = line.replace("input", "input") # keep input
-    line = line.replace("ohio", "match")  #  match/case (Python 3.10+)
-    line = line.replace("sigma_rule", "case")
-    line = line.replace("based", "case _")   #Default case match
-    line = line.replace("cringe", "raise") # Better for exceptions
-    line = line.replace("equals", "=")
-    line = line.replace("plus", "+")
-    line = line.replace("minus", "-")
-    line = line.replace("times", "*")
-    line = line.replace("divide", "/")
-    line = line.replace("modulo", "%")
-    line = line.replace("not", "not")
-    line = line.replace("and", "and")
-    line = line.replace("or", "or")
-    line = line.replace("equals_equals", "==")
-    line = line.replace("not_equals", "!=")
-    line = line.replace("less_than", "<")
-    line = line.replace("greater_than", ">")
-    line = line.replace("less_than_or_equal", "<=")
-    line = line.replace("greater_than_or_equal", ">=")
-    line = line.replace("semicolon", "") # Remove semicolons
-    line = line.replace("comma", ",")
-    line = line.replace("lparen", "(")
-    line = line.replace("rparen", ")")
-    line = line.replace("lbrace", ":")   # Use : for blocks (Python style)
+    line = line.replace("нечего", "None")
+    line = line.replace("цел", "int")  # Still useful for type hinting (though not enforced)
+    line = line.replace("вещ", "float")
+    # line = line.replace("gigachad", "float") # float in this simple interpretor
+    line = line.replace("стр", "str")
+    line = line.replace("бул", "bool")
+    line = line.replace("да", "True")
+    line = line.replace("нет", "False")
+    line = line.replace("если", "if")
+    line = line.replace("иначе", "else")
+    line = line.replace("пока", "while")
+    line = line.replace("прервать", "break")
+    line = line.replace("продолжить", "continue")
+    line = line.replace("для", "for")
+    line = line.replace("воз", "return")  # Limited 'return' support (see below)
+    line = line.replace("печать", "print") # Keep print
+    line = line.replace("ввод", "input") # keep input
+    line = line.replace("соп", "match")  #  match/case (Python 3.10+)
+    line = line.replace("поп", "try")
+    line = line.replace("случай", "case")
+    # line = line.replace("based", "case _")   #Default case match
+    line = line.replace("выб", "raise") # Better for exceptions
+    # line = line.replace("equals", "=")
+    # line = line.replace("plus", "+")
+    # line = line.replace("minus", "-")
+    # line = line.replace("times", "*")
+    # line = line.replace("divide", "/")
+    # line = line.replace("modulo", "%")
+    line = line.replace(" не ", " not ")
+    line = line.replace(" и ", " and ")
+    line = line.replace(" или ", " or ")
+    # line = line.replace("equals_equals", "==")
+    # line = line.replace("not_equals", "!=")
+    # line = line.replace("less_than", "<")
+    # line = line.replace("greater_than", ">")
+    # line = line.replace("less_than_or_equal", "<=")
+    # line = line.replace("greater_than_or_equal", ">=")
+    # line = line.replace("semicolon", "") # Remove semicolons
+    # line = line.replace("comma", ",")
+    # line = line.replace("lparen", "(")
+    # line = line.replace("rparen", ")")
+    # line = line.replace("lbrace", ":")   # Use : for blocks (Python style)
     # --- Function Definition (Very Basic) ---
     #   def my_function(arg1, arg2):
-    match = re.match(r"skibidi\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*lparen(.*)rparen\s*lbrace", line)
+    match = re.match(r"функ\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*\{", line)
     if match:
         func_name = match.group(1)
         args_str = match.group(2).strip()
@@ -97,8 +99,8 @@ def translate_line(line, global_vars):
     # This is a VERY basic "return" that works *only* at the top level
     # (outside of functions) and only for simple expressions.  It stores
     # the return value in a special variable.
-    if line.startswith("bussin"):
-        return_value_expression = line[len("bussin"):].strip()
+    if line.startswith("воз"):
+        return_value_expression = line[len("воз"):].strip()
         return f"__return_value__ = {return_value_expression}"
     
     return line
@@ -130,9 +132,11 @@ def run_gap_code(code):
         new_indent_level = leading_spaces // 4  #  Assume 4 spaces per indent
         
         # --- Function Definition Indentation
-        if "def" in translated_line:
+        if translated_line.startswith("def"):
             in_function_def = True
-        
+            indent_level = 1
+            translated_line = "    " * indent_level + translated_line
+
         if not in_function_def:
           # Adjust to be outside function defs
             new_indent_level = 0
@@ -160,7 +164,7 @@ def main():
         # Read code from file
         filename = sys.argv[1]
         try:
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding='utf-8') as f:
                 code = f.read()
             run_gap_code(code)
         except FileNotFoundError:
