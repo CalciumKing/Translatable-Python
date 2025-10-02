@@ -64,6 +64,8 @@ def translate_line(line, global_vars):
     line = line.replace("соп", "match")  #  match/case (Python 3.10+)
     line = line.replace("поп", "try")
     line = line.replace("случай", "case")
+    line = line.replace("в", "in")
+    line = line.replace("диапазон", "range")
     # line = line.replace("based", "case _")   #Default case match
     line = line.replace("выб", "raise") # Better for exceptions
     # line = line.replace("equals", "=")
@@ -151,13 +153,13 @@ def run_gap_code(code):
     # --- Execute the Translated Line ---
     try:
         exec('\n'.join(translated_program), global_vars)
-        return '\n'.join(translated_program)
     except Exception as e:
         # print(f"Error executing line: {original_line.strip()}")
         # print(f"Translated line: {translated_line.strip()}")
         print(f"Error: {e}")
-        return  # Stop on error
-
+    
+    return '\n'.join(translated_program)
+        
     # --- Print the "Return Value" (if any) ---
     if global_vars["__return_value__"] is not None:
         print(f"Returned: {global_vars['__return_value__']}")
