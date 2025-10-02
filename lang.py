@@ -22,7 +22,7 @@ Key Design Choices:
 -   **String handling** Strings are supported, so the rant is very functional.
 """
 
-import re  # For regular expressions (used for parsing)
+import re
 import sys
 
 
@@ -40,31 +40,31 @@ def translate_line(line: str, global_vars: dict[str, None]) -> str | None:
         return None
 
     translations: list[tuple[str, str]] = [
-        ("None", 'нечего'),
-        ("int", 'цел'),
-        ("float", 'вещ'),
-        ("str", 'стр'),
-        ("bool", 'бул'),
-        ("True", 'да'),
-        ("False", 'нет'),
-        ("if", 'если'),
-        ("else", 'иначе'),
-        ("while", 'пока'),
-        ("break", 'прервать'),
-        ("continue", 'продолжить'),
-        ("for", 'для'),
-        ("return", 'воз'),
-        ("print", 'печать'),
-        ("input", 'ввод'),
-        ("match", 'соп'),
-        ("try", 'поп'),
-        ("case", 'случай'),
-        ("raise", 'выб'),
+        ('None', 'нечего'),
+        ('int', 'цел'),
+        ('float', 'вещ'),
+        ('str', 'стр'),
+        ('bool', 'бул'),
+        ('True', 'да'),
+        ('False', 'нет'),
+        ('if', 'если'),
+        ('else', 'иначе'),
+        ('while', 'пока'),
+        ('break', 'прервать'),
+        ('continue', 'продолжить'),
+        ('for', 'для'),
+        ('return', 'воз'),
+        ('print', 'печать'),
+        ('input', 'ввод'),
+        ('match', 'соп'),
+        ('try', 'поп'),
+        ('case', 'случай'),
+        ('raise', 'выб'),
         ('def', 'функ'),
         
-        (" not ", ' не '),
-        (" and ", ' и '),
-        (" or ", ' или '),
+        (' not ', ' не '),
+        (' and ', ' и '),
+        (' or ', ' или '),
         
         (':', '{'),
         ('', '}')
@@ -75,20 +75,20 @@ def translate_line(line: str, global_vars: dict[str, None]) -> str | None:
 
     # --- Function Definition (Very Basic) ---
     #   def my_function(arg1, arg2):
-    match = re.match(r"def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*:", line)
+    match = re.match(r'def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*:', line)
     if match:
         func_name = match.group(1)
         args_str = match.group(2).strip()
-        return f"def {func_name}({args_str}):"
+        return f'def {func_name}({args_str}):'
 
     # --- Return Statements (Limited) ---
     # We can't *really* handle return values properly without a full AST.
-    # This is a VERY basic "return" that works *only* at the top level
+    # This is a VERY basic 'return' that works *only* at the top level
     # (outside of functions) and only for simple expressions.  It stores
     # the return value in a special variable.
-    if line.startswith("return"):
-        return_value_expression = line[len("return"):].strip()
-        return f"__return_value__ = {return_value_expression}"
+    if line.startswith('return'):
+        return_value_expression = line[len('return'):].strip()
+        return f'__return_value__ = {return_value_expression}'
     
     return line
 
@@ -99,7 +99,7 @@ def run_rus_code(code: str) -> None:
     :param code: The Russian Code
     """
 
-    global_vars = {"__return_value__": None}  # Initialize the global namespace
+    global_vars = {'__return_value__': None}  # Initialize the global namespace
     lines = code.split('\n')
     in_function_def = False
     translated_program = []
@@ -118,7 +118,7 @@ def run_rus_code(code: str) -> None:
         new_indent_level = leading_spaces // 4  #  Assume 4 spaces per indent
         
         # --- Function Definition Indentation
-        if translated_line.startswith("def"):
+        if translated_line.startswith('def'):
             in_function_def = True
             new_indent_level = 0
 
@@ -127,19 +127,19 @@ def run_rus_code(code: str) -> None:
             new_indent_level = 0
 
         # Prepend the correct number of spaces for indentation
-        translated_line = "    " * new_indent_level + translated_line
+        translated_line = '    ' * new_indent_level + translated_line
         translated_program.append(translated_line)
 
     # --- Execute The Full Translated Program ---
     try:
         exec('\n'.join(translated_program), global_vars)
     except Exception as e:
-        print(f"Error: {e}")
+        print(f'Error: {e}')
         return  # Stop on error
 
     # --- Print the "Return Value" (if any) ---
-    if global_vars["__return_value__"] is not None:
-        print(f"Returned: {global_vars['__return_value__']}")
+    if global_vars['__return_value__'] is not None:
+        print(f'Returned: {global_vars['__return_value__']}')
 
 def main():
     """Main function: handles file input."""
@@ -157,21 +157,21 @@ def main():
                 code = f.read()
             run_rus_code(code)
         except FileNotFoundError:
-            print(f"Error: File not found: {filename}")
+            print(f'Error: File not found: {filename}')
 
     else: # TODO: remove later
         # Interactive mode
-        print("Gen Alpha Python Interpreter (Interactive Mode)")
-        print("Enter 'exit' to quit.")
+        print('Gen Alpha Python Interpreter (Interactive Mode)')
+        print('Enter "exit" to quit.')
         code_buffer = []
         while True:
             try:
-                line = input("> ")  # Prompt
-                if line.strip().lower() == "exit":
+                line = input('> ')  # Prompt
+                if line.strip().lower() == 'exit':
                     break
                 code_buffer.append(line)
                 # Check if the entered line completes a block (very basic check)
-                if line.strip().endswith(":"):
+                if line.strip().endswith(':'):
                   #If colon start multi line statement
                     continue
                 else:
@@ -179,11 +179,11 @@ def main():
                     run_rus_code('\n'.join(code_buffer))
                     code_buffer = [] #Reset Buffer
             except KeyboardInterrupt:
-                print("\nExiting...")
+                print('\nExiting...')
                 break
             except EOFError:
-                print("\nExiting...")
+                print('\nExiting...')
                 break
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
