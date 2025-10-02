@@ -38,11 +38,10 @@ def translate_line(line, global_vars):
         ValueError: If the Gen Alpha syntax is invalid.
     """
 
-    # line = line.encode("utf-8")
-    line = line.strip()  # Remove leading/trailing whitespace
-    if not line:  # Skip empty lines
+    if not line:  # Skip empty lines TODO: also skip on comment indicator
         return None
 
+    # TODO: optimize using dictionary or tuple
     # --- Lexical Replacements (Simple Keywords) ---
     line = line.replace("нечего", "None")
     line = line.replace("цел", "int")  # Still useful for type hinting (though not enforced)
@@ -86,9 +85,14 @@ def translate_line(line, global_vars):
     # line = line.replace("lparen", "(")
     # line = line.replace("rparen", ")")
     # line = line.replace("lbrace", ":")   # Use : for blocks (Python style)
+    line = line.replace("{", ":")  # start of a block
+    line = line.replace("}", "")  # end of a block (just remove)
+    line = line.replace('функ', 'def')
+
+
     # --- Function Definition (Very Basic) ---
     #   def my_function(arg1, arg2):
-    match = re.match(r"функ\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*\{", line)
+    match = re.match(r"def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*:", line)
     if match:
         func_name = match.group(1)
         args_str = match.group(2).strip()
@@ -99,8 +103,8 @@ def translate_line(line, global_vars):
     # This is a VERY basic "return" that works *only* at the top level
     # (outside of functions) and only for simple expressions.  It stores
     # the return value in a special variable.
-    if line.startswith("воз"):
-        return_value_expression = line[len("воз"):].strip()
+    if line.startswith("return"):
+        return_value_expression = line[len("return"):].strip()
         return f"__return_value__ = {return_value_expression}"
     
     return line
@@ -117,6 +121,7 @@ def run_gap_code(code):
     lines = code.split('\n')
     indent_level = 0
     in_function_def = False
+    translated_program = []
 
     for original_line in lines:
         translated_line = translate_line(original_line, global_vars)
@@ -134,8 +139,7 @@ def run_gap_code(code):
         # --- Function Definition Indentation
         if translated_line.startswith("def"):
             in_function_def = True
-            indent_level = 1
-            translated_line = "    " * indent_level + translated_line
+            new_indent_level = 0
 
         if not in_function_def:
           # Adjust to be outside function defs
@@ -143,15 +147,16 @@ def run_gap_code(code):
 
         # Prepend the correct number of spaces for indentation
         translated_line = "    " * new_indent_level + translated_line
+        translated_program.append(translated_line)
 
-        # --- Execute the Translated Line ---
-        try:
-            exec(translated_line, global_vars)
-        except Exception as e:
-            print(f"Error executing line: {original_line.strip()}")
-            print(f"Translated line: {translated_line.strip()}")
-            print(f"Error: {e}")
-            return  # Stop on error
+    # --- Execute the Translated Line ---
+    try:
+        exec('\n'.join(translated_program), global_vars)
+    except Exception as e:
+        # print(f"Error executing line: {original_line.strip()}")
+        # print(f"Translated line: {translated_line.strip()}")
+        print(f"Error: {e}")
+        return  # Stop on error
 
     # --- Print the "Return Value" (if any) ---
     if global_vars["__return_value__"] is not None:
@@ -170,7 +175,7 @@ def main():
         except FileNotFoundError:
             print(f"Error: File not found: {filename}")
 
-    else:
+    else: # TODO: remove later
         # Interactive mode
         print("Gen Alpha Python Interpreter (Interactive Mode)")
         print("Enter 'exit' to quit.")
