@@ -168,6 +168,11 @@ def main():
     if len(sys.argv) > 1:
         # Read code from file
         filename = sys.argv[1]
+
+        if filename[6:] != '.blyad':
+            print('Your Chosen File Is Not A .blyad File')
+            return
+
         try:
             with open(filename, 'r', encoding='utf-8') as f:
                 code = f.read()
