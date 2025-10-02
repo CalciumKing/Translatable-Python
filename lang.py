@@ -169,7 +169,7 @@ def main():
         # Read code from file
         filename = sys.argv[1]
 
-        if filename[6:] != '.blyad':
+        if not filename.endswith('.blyad'):
             print('Your Chosen File Is Not A .blyad File')
             return
 
