@@ -40,7 +40,7 @@ def translate_line(line: str, global_vars: dict[str, None]) -> str | None:
 		return None
 	
 	translations: list[tuple[str, str]] = [
-		('None', 'нечего'),
+		('None', 'ничего'),
 		('int', 'цел'),
 		('float', 'вещ'),
 		('str', 'стр'),
