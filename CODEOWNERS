@@ -1,0 +1,10 @@
+# Language Examples, Documentation
+/examples/  @CalciumKing
+lang.csv    @CalciumKing
+README.md   @CalciumKing
+
+# Both Worked On Compiler
+lang.py     @CalciumKing @petepoop
+
+# Everything else is co-owned
+*           @CalciumKing @petepoop
