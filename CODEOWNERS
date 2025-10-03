@@ -1,10 +1,11 @@
-# Language Examples, Documentation
-/examples/  @CalciumKing
-lang.csv    @CalciumKing
-README.md   @CalciumKing
+# Russian Examples, Documentation
+examples/ru/*   @CalciumKing
+lang.csv        @CalciumKing
+README.md       @CalciumKing
 
-# Both Worked On Compiler
-lang.py     @CalciumKing @petepoop
+# Thai Examples, Debugger File
+examples/th/*   @petepoop
+debug/*         @petepoop
 
-# Everything else is co-owned
-*           @CalciumKing @petepoop
+# Compiler is co-owned
+lang.py         @CalciumKing @petepoop
