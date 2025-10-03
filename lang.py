@@ -26,20 +26,7 @@ import re
 import sys
 import os
 
-
-def translate_line(line: str) -> str | None:
-	"""
-	Translates a single line of Russian Python to standard Python.
-	
-	:param line: The line of Russian Python code.
-	:return: The equivalent Python code, or None if the line should be skipped.
-	:raise ValueError: If the Russian syntax is invalid.
-	"""
-	
-	if not line:  # Skip empty lines
-		return None
-	
-	translations: list[tuple[str, str]] = [
+translations: list[tuple[str, str]] = [
 		('None', 'ничего'),
 		('int', 'цел'),
 		('float', 'вещ'),
@@ -68,46 +55,41 @@ def translate_line(line: str) -> str | None:
 		(' and ', ' и '),
 		(' or ', ' или '),
 	]
-	
-	for eng, rus in translations:
-		line = line.replace(rus, eng)
-	
-	# Function Definition
-	# def my_function(arg1, arg2):
-	match = re.match(r'def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*:', line)
-	if match:
-		func_name = match.group(1)
-		args_str = match.group(2).strip()
-		return f'def {func_name}({args_str}):'
-	
-	return line
 
+def get_strings(orinigal_programs):
+	stringsLocations = []
 
-def run_rus_code(code: str) -> str:
-	"""
-	Executes Russian Python code.
+	inside = "NONE"
+	pointer = -1
+	for i, char in enumerate(orinigal_programs):
+		if (inside == "NONE"):
+			if (char == "'" or char == '"'):
+				inside = char
+				pointer = i
+		else:
+			if (char == inside):
+				inside = "NONE"
+				stringsLocations.append((pointer, i))
+
+	return stringsLocations
+
+def is_in_string(idx, string_locs):
+		for start, end in string_locs:
+			if start <= idx < end:
+				return True
+		return False
+
+def translate_program(program: str) -> str:
+	string_locs = get_strings(program)
 	
-	:param code: The Russian Code
-	"""
-	
-	lines = code.split('\n')
-	translated_program = []
-	
-	for original_line in lines:
-		translated_line = translate_line(original_line)
-		
-		if translated_line is None:  # Skip empty or comment lines
-			continue
-		
-		translated_program.append(translated_line)
-	
-	# Execute The Full Translated Program
-	try:
-		exec('\n'.join(translated_program))
-	except Exception as e:
-		raise Exception(e)
-	finally:
-		return '\n'.join(translated_program)
+	for py_word, rus_word in translations:
+		def replacer(match):
+			idx = match.start()
+			return py_word if not is_in_string(idx, string_locs) else match.group(0)
+		pattern = r'\b' + re.escape(rus_word) + r'\b'
+		program = re.sub(pattern, replacer, program)
+	return program
+
 
 
 def main():
@@ -123,8 +105,9 @@ def main():
 		try:
 			with open(filename, 'r', encoding='utf-8') as f:
 				code = f.read()
-			python_program = run_rus_code(code)
-			
+
+			python_program = translate_program(code)
+
 			if len(sys.argv) == 3 and sys.argv[2] == '--debug':
 				if not os.path.exists('debug'):
 					os.makedirs('debug')
@@ -134,6 +117,14 @@ def main():
 						encoding='utf-8'
 				) as f:
 					f.write(python_program)
+
+			try:
+				exec(python_program)
+			except Exception as e:
+				raise Exception(e)
+			
+			
+
 		except FileNotFoundError:
 			raise FileNotFoundError(f'Error: File not found: {filename}')
 
