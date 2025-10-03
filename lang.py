@@ -73,15 +73,17 @@ def translate_program(program: str) -> str:
 	:return: translated python program
 	"""
 	
+	def replacer(match) -> str:
+		"""Replaces translatable keywords if they are not located in a string"""
+		
+		idx = match.start()
+		return py_word \
+			if not is_in_string(idx, strings) \
+			else match.group(0)
+	
 	strings = get_strings(program)
 	
 	for py_word, lang_word in get_translations():
-		def replacer(match):
-			idx = match.start()
-			return py_word \
-				if not is_in_string(idx, strings) \
-				else match.group(0)
-		
 		pattern = r'\b' + re.escape(lang_word) + r'\b'
 		program = re.sub(pattern, replacer, program)
 	
