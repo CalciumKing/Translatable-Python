@@ -15,8 +15,9 @@ return,воз
 print,печать
 input,ввод
 match,соп
-try,поп
 case,случай
+try,поп
+except,кроме
 raise,выб
 class,класс
 def,функ
