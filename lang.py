@@ -3,7 +3,6 @@ import sys
 import os
 import csv
 
-
 def get_strings(original_program: str) -> list[tuple[int, int]]:
 	"""
 	Searches through entire file program, saves indexes of double/single
@@ -89,44 +88,35 @@ def translate_program(program: str) -> str:
 	return program
 
 
-def main() -> None:
-	"""Main function: handles file input."""
+
+"""Main function: handles file input."""
 	
-	if len(sys.argv) == 1:
-		raise IOError('Must Provide Additional Arguments')
-	
-	# Read code from file
-	filename = sys.argv[1]
-	
-	if not filename.endswith('.tpy'):
-		raise FileNotFoundError('Your Chosen File Is Not A .tpy File')
-	
-	with open(filename, 'r', encoding='utf-8') as f:
-		code = f.read()
-	
-	python_program = translate_program(code)
-	
-	if len(sys.argv) == 2 or sys.argv[2] != '--debug':
-		try:
-			exec(python_program)
-		except Exception as e:
-			raise Exception(e)
-		return
-	
+if len(sys.argv) == 1:
+	raise IOError('Must Provide Additional Arguments')
+
+# Read code from file
+filename = sys.argv[1]
+
+if not filename.endswith('.tpy'):
+	raise FileNotFoundError('Your Chosen File Is Not A .tpy File')
+
+with open(filename, 'r', encoding='utf-8') as f:
+	code = f.read()
+
+python_program = translate_program(code)
+
+if len(sys.argv) == 2 and sys.argv[2] == '--debug':
 	if not os.path.exists('debug'):
-		os.makedirs('debug')
-	
+			os.makedirs('debug')
+		
 	with open(
 			f'debug/debug.py', 'w',
 			encoding='utf-8'
 	) as f:
 		f.write(python_program)
-	
-	try:
-		exec(python_program)
-	except Exception as e:
-		raise Exception(e)
 
+try:
+	exec(python_program)
+except Exception as e:
+	raise Exception(e)
 
-if __name__ == '__main__':
-	main()
