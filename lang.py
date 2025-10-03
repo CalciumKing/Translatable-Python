@@ -67,9 +67,6 @@ def translate_line(line: str) -> str | None:
 		(' not ', ' не '),
 		(' and ', ' и '),
 		(' or ', ' или '),
-		
-		(':', '{'),
-		('', '}')
 	]
 	
 	for eng, rus in translations:
