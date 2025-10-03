@@ -1,132 +1,131 @@
-"""
-Russian Python - A Python-like language with Russian Keywords.
-This is a rudimentary interpreter, not a full compiler. It translates
-Russian keywords into valid Python code and then *executes* that Python code.
-This approach has significant limitations, but it's a good way to demonstrate
-the basic concept without building a full-blown compiler and virtual machine.
-
-This project also has potential to translate any languages supported by UTF-8
-into valid python code.
-
-Key Design Choices:
-
--   **Interpreter, not Compiler:** This is easier to implement for a demo.
--   **Entire File Translation:** We process all the Russian code before executing.
--   **exec() for Execution:** After translating a line to Python, we use `exec()`
-    to run it. `exec()` is powerful but can be dangerous with untrusted input.
-    In a real language, you'd build an Abstract Syntax Tree (AST) and evaluate it.
--   **Limited Scope:** This interpreter supports only a subset of Python features.
--   **Global Namespace:**  We use a single global dictionary (`global_vars`) to
-    store variables. This keeps things simple but would be problematic in a
-    real language (no function-local scope, etc.).
--   **String handling** Strings are supported, so the rant is very functional.
-"""
-
 import re
 import sys
 import os
+import csv
 
-translations: list[tuple[str, str]] = [
-		('None', 'ничего'),
-		('int', 'цел'),
-		('float', 'вещ'),
-		('str', 'стр'),
-		('bool', 'бул'),
-		('True', 'да'),
-		('False', 'нет'),
-		('if', 'если'),
-		('else', 'иначе'),
-		('while', 'пока'),
-		('break', 'прервать'),
-		('continue', 'продолжить'),
-		('for', 'для'),
-		('return', 'воз'),
-		('print', 'печать'),
-		('input', 'ввод'),
-		('match', 'соп'),
-		('try', 'поп'),
-		('case', 'случай'),
-		('raise', 'выб'),
-		('def', 'функ'),
-		('in', 'в'),
-		('range', 'диапазон'),
-		
-		(' not ', ' не '),
-		(' and ', ' и '),
-		(' or ', ' или '),
-	]
 
-def get_strings(orinigal_programs):
-	stringsLocations = []
-
+def get_strings(original_program: str) -> list[tuple[int, int]]:
+	"""
+	Searches through entire file program, saves indexes of double/single
+	quotes in a list of tuples, returns that list.
+	
+	Uses list to avoid translations within quotes.
+	
+	:param original_program: non-translated program in string format
+	:return: list of start and end positions of quotes
+	"""
+	
+	string_locations: list[tuple[int, int]] = []
+	
 	inside = "NONE"
 	pointer = -1
-	for i, char in enumerate(orinigal_programs):
-		if (inside == "NONE"):
-			if (char == "'" or char == '"'):
+	for i, char in enumerate(original_program):
+		if inside == "NONE":
+			if char == "'" or char == '"':
 				inside = char
 				pointer = i
 		else:
-			if (char == inside):
+			if char == inside:
 				inside = "NONE"
-				stringsLocations.append((pointer, i))
+				string_locations.append((pointer, i))
+	
+	return string_locations
 
-	return stringsLocations
 
-def is_in_string(idx, string_locs):
-		for start, end in string_locs:
-			if start <= idx < end:
-				return True
-		return False
+def is_in_string(idx: int, string_positions: list[tuple[int, int]]) -> bool:
+	"""
+	Checks if index of keyword is within start and end index of single/double quotes
+	
+	Returns bool based on result
+	
+	:param idx: index of translatable keyword
+	:param string_positions: list of start and end positions of quotes
+	:return: ``True`` if index of keyword is within string indexes, ``False`` otherwise
+	"""
+	
+	for start, end in string_positions:
+		if start <= idx < end:
+			return True
+	return False
+
+
+def get_translations() -> list[tuple[str, str]]:
+	"""
+	Reads translatable keywords from a csv file.
+	
+	:return: list of tuples containing python keywords and translatable keyword
+	"""
+	
+	translations: list[tuple[str, str]] = []
+	
+	with open('lang.csv', encoding='utf-8', newline='') as f:
+		reader = csv.reader(f)
+		for row in reader:
+			translations.append((row[0], row[1]))
+	
+	return translations
+
 
 def translate_program(program: str) -> str:
-	string_locs = get_strings(program)
+	"""
+	Replaces all translatable keywords in program with python keywords.
 	
-	for py_word, rus_word in translations:
+	:param program: python-like program with translatable keywords
+	:return: translated python program
+	"""
+	
+	strings = get_strings(program)
+	
+	for py_word, lang_word in get_translations():
 		def replacer(match):
 			idx = match.start()
-			return py_word if not is_in_string(idx, string_locs) else match.group(0)
-		pattern = r'\b' + re.escape(rus_word) + r'\b'
+			return py_word \
+				if not is_in_string(idx, strings) \
+				else match.group(0)
+		
+		pattern = r'\b' + re.escape(lang_word) + r'\b'
 		program = re.sub(pattern, replacer, program)
+	
 	return program
 
 
-
-def main():
+def main() -> None:
 	"""Main function: handles file input."""
 	
-	if len(sys.argv) > 1:
-		# Read code from file
-		filename = sys.argv[1]
-		
-		if not filename.endswith('.blyad'):
-			raise FileNotFoundError('Your Chosen File Is Not A .blyad File')
-		
+	if len(sys.argv) == 1:
+		raise IOError('Must Provide Additional Arguments')
+	
+	# Read code from file
+	filename = sys.argv[1]
+	
+	if not filename.endswith('.tpy'):
+		raise FileNotFoundError('Your Chosen File Is Not A .tpy File')
+	
+	with open(filename, 'r', encoding='utf-8') as f:
+		code = f.read()
+	
+	python_program = translate_program(code)
+	
+	if len(sys.argv) == 2 or sys.argv[2] != '--debug':
 		try:
-			with open(filename, 'r', encoding='utf-8') as f:
-				code = f.read()
-
-			python_program = translate_program(code)
-
-			if len(sys.argv) == 3 and sys.argv[2] == '--debug':
-				if not os.path.exists('debug'):
-					os.makedirs('debug')
-				
-				with open(
-						f'debug/{filename.removesuffix('.blyad')}.py', 'w',
-						encoding='utf-8'
-				) as f:
-					f.write(python_program)
-
-			try:
-				exec(python_program)
-			except Exception as e:
-				raise Exception(e)
-			
-			
-
-		except FileNotFoundError:
-			raise FileNotFoundError(f'Error: File not found: {filename}')
+			exec(python_program)
+		except Exception as e:
+			raise Exception(e)
+		return
+	
+	if not os.path.exists('debug'):
+		os.makedirs('debug')
+	
+	with open(
+			f'debug/debug.py', 'w',
+			encoding='utf-8'
+	) as f:
+		f.write(python_program)
+	
+	try:
+		exec(python_program)
+	except Exception as e:
+		raise Exception(e)
 
 
 if __name__ == '__main__':
