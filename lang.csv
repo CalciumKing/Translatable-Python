@@ -1,28 +1,5 @@
-None,ничего
-int,цел
-float,вещ
-str,стр
-bool,бул
-True,да
-False,нет
-if,если
-else,иначе
-while,пока
-break,прервать
-continue,продолжить
-for,для
-return,воз
-print,печать
-input,ввод
-match,соп
-case,случай
-try,поп
-except,кроме
-raise,выб
-class,класс
-def,функ
- in, в
-range,диапазон
- not , не
- and , и
- or , или
+def,myfunc
+return,sendback
+if,whenever
+else,otherwise
+print,say
