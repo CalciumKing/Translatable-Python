@@ -1,0 +1,30 @@
+None,ไม่มี
+int,จำนวนเต็ม
+float,ทศนิยม
+str,ข้อความ
+bool,ตรรกะ
+True,จริง
+False,เท็จ
+if,ถ้า
+elif,ถ้าอีก
+else,มิฉะนั้น
+while,ขณะ
+break,หยุดทำ
+continue,ทำต่อไป
+for,วนซ้ำ
+return,คืนค่า
+print,แสดงผล
+input,ป้อนค่า
+match,จับคู่
+case,กรณี
+try,ลองทำ
+except,ยกเว้น
+raise,แจ้งข้อผิดพลาด
+class,แบบ
+self,ตนเอง
+def,กำหนด
+ in, ใน
+range,ช่วง
+ not , ไม่
+ and , และ
+ or , หรือ
