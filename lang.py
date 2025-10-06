@@ -17,17 +17,16 @@ def get_strings(original_program: str) -> list[tuple[int, int]]:
 	
 	string_locations: list[tuple[int, int]] = []
 	
-	inside = "NONE"
-	pointer = -1
+	inside: str | None = None
+	pointer: int = -1
 	for i, char in enumerate(original_program):
-		if inside == "NONE":
-			if char == "'" or char == '"':
+		if inside is None:
+			if char in ("'", '"'):
 				inside = char
 				pointer = i
-		else:
-			if char == inside:
-				inside = "NONE"
-				string_locations.append((pointer, i))
+		elif char == inside:
+			inside = None
+			string_locations.append((pointer, i))
 	
 	return string_locations
 
