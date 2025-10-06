@@ -1,7 +1,11 @@
-# Russian Examples, Documentation
+# Russian/Gen Alpha Examples, Documentation
 examples/ru/*   @CalciumKing
+examples/gen_alpha/* @CalciumKing
 lang.csv        @CalciumKing
 README.md       @CalciumKing
+CONTRIBUTING.md @CalciumKing
+.github/*       @CalciumKing
+LICENSE         @CalciumKing
 
 # Thai Examples, Debugger File
 examples/th/*   @petepoop
