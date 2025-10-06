@@ -1,0 +1,9 @@
+def fibonacci(n: rizz):
+    edgy n <= 1:
+        bussin n
+    amogus:
+        bussin fibonacci(n - 1) + fibonacci(n - 2)
+
+num: rizz = rizz(input('Enter Number: '))
+num = fibonacci(num)
+gyatt(num)

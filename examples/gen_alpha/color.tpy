@@ -1,0 +1,11 @@
+color = input('Enter Color: ')
+
+ohio color:
+    sigma 'Red':
+        gyatt('Stop!')
+    sigma 'Yellow':
+        gyatt('Slow Down!')
+    sigma 'Green':
+        gyatt('Go!')
+    based:
+        gyatt('Unknown Color!')

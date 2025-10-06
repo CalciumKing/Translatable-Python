@@ -1,0 +1,11 @@
+funk is_prime(n: rizz):
+    edgy n <= 1:
+        bussin L
+
+    flex i in range(2, n):
+        edgy n % i == 0:
+            bussin L
+    bussin W
+
+num: rizz = rizz(input('Enter Number: '))
+gyatt(is_prime(num))
