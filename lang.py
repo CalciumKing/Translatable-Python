@@ -43,24 +43,24 @@ def is_in_string(idx: int, string_positions: list[tuple[int, int]]) -> bool:
 	"""
 	
 	for start, end in string_positions:
-		if start <= idx < end:
+		if start < idx < end:
 			return True
 	return False
 
 
-def get_translations() -> list[tuple[str, str]]:
+def get_translations() -> dict[str, str]:
 	"""
 	Reads translatable keywords from a csv file.
 	
-	:return: list of tuples containing python keywords and translatable keyword
+	:return: a dictionary containing python keywords and translatable keyword
 	"""
 	
-	translations: list[tuple[str, str]] = []
+	translations: dict[str, str] = {}
 	
 	with open('lang.csv', encoding='utf-8', newline='') as f:
 		reader = csv.reader(f)
 		for row in reader:
-			translations.append((row[0], row[1]))
+			translations[row[0]] = row[1]
 	
 	return translations
 
@@ -77,14 +77,16 @@ def translate_program(program: str) -> str:
 		"""Replaces translatable keywords if they are not located in a string"""
 		
 		idx = match.start()
+		strings: list[tuple[int, int]] = get_strings(program)
+		
 		return py_word \
 			if not is_in_string(idx, strings) \
 			else match.group(0)
 	
-	strings = get_strings(program)
+	translations: dict[str, str] = get_translations()
 	
-	for py_word, lang_word in get_translations():
-		pattern = r'\b' + re.escape(lang_word) + r'\b'
+	for py_word in translations.keys():
+		pattern = re.escape(translations[py_word])
 		program = re.sub(pattern, replacer, program)
 	
 	return program
