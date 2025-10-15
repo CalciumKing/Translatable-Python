@@ -69,7 +69,7 @@ def translate_program(program: str) -> str:
 	"""
 	Replaces all translatable keywords in program with python keywords.
 	
-	:param program: python-like program with translatable keywords
+	:param program: python-like program with translatable keywords in string format
 	:return: translated python program
 	"""
 	
